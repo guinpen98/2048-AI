@@ -49,7 +49,7 @@ class Game:
                 for x in range(4):
                     if self.board[y][3-x]==0: # 値が0の時
                         z_cnt += 1
-                    elif self.board[y][x]==prev: # 右隣のマスと値が同じ時
+                    elif self.board[y][3-x]==prev: # 右隣のマスと値が同じ時
                         z_cnt += 1
                         self.board[y][3-x+z_cnt] *= 2 # 右隣にあるマスの値を二倍にする
                         self.board[y][3-x] = 0
@@ -91,7 +91,7 @@ class Game:
                 for y in range(4):
                     if self.board[3-y][x]==0: # 値が0の時
                         z_cnt += 1
-                    elif self.board[y][x]==prev: # 下隣のマスと値が同じ時
+                    elif self.board[3-y][x]==prev: # 下隣のマスと値が同じ時
                         z_cnt += 1
                         self.board[3-y+z_cnt][x] *= 2 # 下隣にあるマスの値を二倍にする
                         self.board[3-y][x] = 0
