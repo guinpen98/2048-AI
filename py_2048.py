@@ -21,7 +21,7 @@ class Game:
     def action(self,action):
         reward = 0 # 報酬の初期化
 
-        if action==1: # 左にスワイプ
+        if action==0: # 左にスワイプ
             for y in range(4):
                 z_cnt = 0 # 値が0であるマスの数
                 prev = -1 # 0を抜かした左隣のマスの値
@@ -42,7 +42,7 @@ class Game:
                         self.board[y][x] = 0
                         self.board[y][x-z_cnt] = prev
                         
-        elif action==2: # 右にスワイプ
+        elif action==1: # 右にスワイプ
             for y in range(4):
                 z_cnt = 0 # 値が0であるマスの数
                 prev = -1 # 0を抜かした右隣のマスの値
@@ -63,7 +63,7 @@ class Game:
                         self.board[y][3-x] = 0
                         self.board[y][3-x+z_cnt] = prev
 
-        elif action==3: # 上にスワイプ
+        elif action==2: # 上にスワイプ
             for x in range(4):
                 z_cnt = 0 # 値が0であるマスの数
                 prev = -1 # 0を抜かした上隣のマスの値
@@ -84,7 +84,7 @@ class Game:
                         self.board[y][x] = 0
                         self.board[y-z_cnt][x] = prev
                         
-        elif action==4: # 下にスワイプ
+        elif action==3: # 下にスワイプ
             for x in range(4):
                 z_cnt = 0 # 値が0であるマスの数
                 prev = -1 # 0を抜かした下隣のマスの値
@@ -119,7 +119,7 @@ class Game:
 
 def is_invalid_action(state,action): # 選択したアクションが無効かどうか
 
-    if action==1:
+    if action==0:
         for y in range(4):
             z_cnt = 0
             prev = -1
@@ -131,7 +131,7 @@ def is_invalid_action(state,action): # 選択したアクションが無効か�
                 else:
                     prev = state[y][x]
 
-    if action==2:
+    if action==1:
         for y in range(4):
             z_cnt = 0
             prev = -1
@@ -143,7 +143,7 @@ def is_invalid_action(state,action): # 選択したアクションが無効か�
                 else:
                     prev = state[y][3-x]
 
-    if action==3:
+    if action==2:
         for x in range(4):
             z_cnt = 0
             prev = -1
@@ -155,7 +155,7 @@ def is_invalid_action(state,action): # 選択したアクションが無効か�
                 else:
                     prev = state[y][x]
 
-    if action==4:
+    if action==3:
         for x in range(4):
             z_cnt = 0
             prev = -1
@@ -169,4 +169,8 @@ def is_invalid_action(state,action): # 選択したアクションが無効か�
     
     return True
 
-
+def is_end(state):
+    for i in range(4):
+        if(not is_invalid_action(state,i)):
+            return False
+    return True
