@@ -2,9 +2,9 @@ import numpy as np
 
 class Game:
     def __init__(self):
-        self.start()
+        self.reset()
 
-    def start(self):
+    def reset(self):
         self.board = np.zeros([4,4]) # 盤面の初期化
         self.score = 0 # スコアの初期化
         x = np.random.randint(0,4) 

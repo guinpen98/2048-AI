@@ -15,10 +15,10 @@ def show_board(game):
         for y in range(4):
             result[y][x] = board[y][x]
 
-    sns.heatmap(result, square=True, cbar=False, annot=True, linewidth=2, xticklabels=False, yticklabels=False, vmax=512, vmin=0, fmt='.5g', cmap='prism_r', ax=subplot).set_title('2048 game!')
+    sns.heatmap(result, square=True, cbar=False, annot=True, linewidth=2, xticklabels=False, yticklabels=False, vmax=512, vmin=0, fmt='.5g', cmap='prism_r', ax=subplot).set_title('2048 game')
     plt.show()
 
-    print('score: {0:.0f}'.format(score))
+    # print('score: {0:.0f}'.format(score))
 
 def human_play():
     game = py_2048.Game()
@@ -31,5 +31,3 @@ def human_play():
         r = game.action(select_action)
         clear_output(wait=True)
         show_board(game)
-
-human_play()
