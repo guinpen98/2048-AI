@@ -36,5 +36,6 @@ for i in range(10):
     ai.game.reset()
     while(not py_2048.is_end(ai.game.board)):
         ai.action()
+    clear_output(wait=False)
     show_board(ai.game)
     i += 1
