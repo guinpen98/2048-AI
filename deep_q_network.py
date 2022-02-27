@@ -28,6 +28,7 @@ class Brain:
         self.net = net  # ニューラルネットワークのモデル
         self.loss_fnc = loss_fnc  # 誤差関数
         self.optimizer = optimizer  # 最適化アルゴリズム
+        self.net.cuda()
 
         self.eps = 1.0  # ε
         self.gamma = gamma  # 割引率
@@ -39,6 +40,7 @@ class Brain:
         state = torch.from_numpy(state).float()
         next_state = np.ravel(next_states)
         next_state = torch.from_numpy(next_state).float()
+        state, next_state = state.cuda(), next_state.cuda() 
             
         self.net.eval()  # 評価モード
         next_q = self.net.forward(next_state)
@@ -55,23 +57,6 @@ class Brain:
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
-
-    # def get_action(self, states):  # 行動を取得
-    #     state = np.ravel(states)
-    #     state = torch.from_numpy(state).float()
-
-    #     q = self.net.forward(state) #nnからQ値を取得
-    #     action = np.argmax(q.detach().cpu().numpy(), axis=0) # Q値の高い行動を選択
-
-    #     if np.random.rand() < self.eps or py_2048.is_invalid_action(states,action):  # ランダムな行動
-    #         while(True):
-    #             action = np.random.randint(self.n_action)
-    #             if not py_2048.is_invalid_action(states,action):
-    #                 break
-            
-    #     if self.eps > 0.1:  # εの下限
-    #         self.eps *= self.r
-    #     return action
 
     def get_train_action(self, game):  # 行動を取得
         if np.random.rand() < self.eps:  # ランダムな行動
@@ -91,6 +76,7 @@ class Brain:
                     r = game.action(a)
                     state_new = np.ravel(game.board.tolist())
                     state_new = torch.from_numpy(state_new).float()
+                    state_new = state_new.cuda()
                     q_tmp = self.net.forward(state_new)
                     q = np.append(q,r+np.amax(q_tmp.detach().cpu().numpy(), axis=0))
                 game.board = board_backup
@@ -115,6 +101,7 @@ class Brain:
                 r = game.action(a)
                 state_new = np.ravel(game.board.tolist())
                 state_new = torch.from_numpy(state_new).float()
+                state_new = state_new.cuda()
                 q_tmp = self.net.forward(state_new)
                 q = np.append(q,r+np.amax(q_tmp.detach().cpu().numpy(), axis=0))
             game.board = board_backup

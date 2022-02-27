@@ -21,7 +21,7 @@ n_mid2 = 1024
 net = deep_q_network.Net(n_mid1,n_mid2)
 
 # 読み込み
-load_path = './model/model_2000_RMSprop.pth'
+load_path = './model/model_2000_Adam.pth'
 load_weights = torch.load(load_path)
 net.load_state_dict(load_weights)
 
@@ -32,11 +32,11 @@ brain = deep_q_network.Brain(net,loss_fnc,optimizer)
 game = py_2048.Game()
 ai = deep_q_network.Ai(brain,game)
 
-# for i in range(10):
-#     ai.game.reset()
-#     while(not py_2048.is_end(ai.game.board)):
-#         ai.action()
-#     clear_output(wait=False)
-#     show_board(ai.game)
+for i in range(10):
+    ai.game.reset()
+    while(not py_2048.is_end(ai.game.board)):
+        ai.action()
+    clear_output(wait=False)
+    show_board(ai.game)
 
-average_score(ai,1000)
+# average_score(ai,1000)
