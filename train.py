@@ -30,7 +30,6 @@ for i in range(10):
     ai.game.reset()
     while(not py_2048.is_end(ai.game.board)):
         ai.learning()
-    i += 1
 
 show_board(ai.game)
 for i in range(1):
@@ -39,4 +38,3 @@ for i in range(1):
         ai.action()
         clear_output(wait=False)
         show_board(ai.game)
-    i += 1
