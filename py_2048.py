@@ -18,6 +18,13 @@ class Game:
                 self.board[y][x] = 2
                 break
     
+    def is_fill(self):
+        for y in range (4):
+            for x in range(4):
+                if self.board[y][x] == 0:
+                    return False
+        return True
+
     def action(self,action):
         reward = 0 # 報酬の初期化
 
@@ -104,16 +111,16 @@ class Game:
                             continue
                         self.board[3-y][x] = 0
                         self.board[3-y+z_cnt][x] = prev
-
-        while(True):
-            y = np.random.randint(0,4)
-            x = np.random.randint(0,4)
-            if self.board[y][x]==0:
-                if np.random.random() < 0.2: # 20%の確率で4が生成される
-                    self.board[y][x] = 4
-                else:
-                    self.board[y][x] = 2
-                break
+        if not self.is_fill():
+            while(True):
+                y = np.random.randint(0,4)
+                x = np.random.randint(0,4)
+                if self.board[y][x]==0:
+                    if np.random.random() < 0.2: # 20%の確率で4が生成される
+                        self.board[y][x] = 4
+                    else:
+                        self.board[y][x] = 2
+                    break
 
         return reward
 

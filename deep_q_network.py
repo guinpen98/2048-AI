@@ -58,7 +58,8 @@ class Brain:
         loss.backward()
         self.optimizer.step()
 
-    def get_train_action(self, game):  # 行動を取得
+    def new_get_train_action(self, game):  # 行動を取得
+        if py_2048.is_end(game.board.tolist()): return 0
         if np.random.rand() < self.eps:  # ランダムな行動
             while(True):
                 action = np.random.randint(self.n_action)
@@ -66,48 +67,127 @@ class Brain:
                     break
         else:
             q = np.empty(0)
+            board_backup = copy.deepcopy(game.board)
+            score_backup = game.score
             for a in range(4):
-                board_backup = copy.deepcopy(game.board)
-                score_backup = game.score
-
                 if(py_2048.is_invalid_action(game.board.tolist(), a)):
                     q = np.append(q,-10**10)
                 else:
                     r = game.action(a)
-                    state_new = np.ravel(game.board.tolist())
-                    state_new = torch.from_numpy(state_new).float()
-                    state_new = state_new.cuda()
-                    q_tmp = self.net.forward(state_new)
-                    q = np.append(q,r+np.amax(q_tmp.detach().cpu().numpy(), axis=0))
-                game.board = board_backup
-                game.score = score_backup
+                    next_q = np.empty(0)
+                    next_board_backup = copy.deepcopy(game.board)
+                    for next_a in range(4):
+                        if(py_2048.is_invalid_action(game.board.tolist(), next_a)):
+                            next_r = game.action(next_a)
+                            state_next = np.ravel(game.board.tolist())
+                            state_next = torch.from_numpy(state_next).float()
+                            state_next = state_next.cuda()
+                            next_q_tmp = self.net.forward(state_next)
+                            next_q = np.append(next_q,next_r+np.amax(next_q_tmp.detach().cpu().numpy(), axis=0))
+                            game.board = copy.deepcopy(next_board_backup)
+                    if next_q.size == 0:
+                        state = np.ravel(game.board.tolist())
+                        state = torch.from_numpy(state).float()
+                        state = state.cuda()
+                        q_tmp = self.net.forward(state)
+                        q = np.append(q,r+np.amax(q_tmp.detach().cpu().numpy(), axis=0))
+                        game.board = copy.deepcopy(next_board_backup)
+                    else:
+                        q = np.append(q,np.amax(next_q))  
+                game.board = copy.deepcopy(board_backup)
+            game.score = score_backup
 
             action = np.argmax(q) # Q値の高い行動を選択
 
-            
         if self.eps > 0.1:  # εの下限
             self.eps *= self.r
         return action
 
-    def get_action(self, game):  # 行動を取得
-        q = np.empty(0)
-        for a in range(4):
-            board_backup = copy.deepcopy(game.board)
-            score_backup = game.score
+    # def get_train_action(self, game):  # 行動を取得
+    #     if np.random.rand() < self.eps:  # ランダムな行動
+    #         while(True):
+    #             action = np.random.randint(self.n_action)
+    #             if not py_2048.is_invalid_action(game.board.tolist(),action):
+    #                 break
+    #     else:
+    #         q = np.empty(0)
+    #         for a in range(4):
+    #             board_backup = copy.deepcopy(game.board)
+    #             score_backup = game.score
 
+    #             if(py_2048.is_invalid_action(game.board.tolist(), a)):
+    #                 q = np.append(q,-10**10)
+    #             else:
+    #                 r = game.action(a)
+    #                 state_new = np.ravel(game.board.tolist())
+    #                 state_new = torch.from_numpy(state_new).float()
+    #                 state_new = state_new.cuda()
+    #                 q_tmp = self.net.forward(state_new)
+    #                 q = np.append(q,r+np.amax(q_tmp.detach().cpu().numpy(), axis=0))
+    #             game.board = board_backup
+    #             game.score = score_backup
+    #         action = np.argmax(q) # Q値の高い行動を選択
+            
+    #     if self.eps > 0.1:  # εの下限
+    #         self.eps *= self.r
+    #     return action
+
+    def new_get_action(self, game):  # 行動を取得
+        if py_2048.is_end(game.board.tolist()): return 0
+        q = np.empty(0)
+        board_backup = copy.deepcopy(game.board)
+        score_backup = game.score
+        for a in range(4):
             if(py_2048.is_invalid_action(game.board.tolist(), a)):
                 q = np.append(q,-10**10)
             else:
                 r = game.action(a)
-                state_new = np.ravel(game.board.tolist())
-                state_new = torch.from_numpy(state_new).float()
-                state_new = state_new.cuda()
-                q_tmp = self.net.forward(state_new)
-                q = np.append(q,r+np.amax(q_tmp.detach().cpu().numpy(), axis=0))
-            game.board = board_backup
-            game.score = score_backup
+                next_q = np.empty(0)
+                next_board_backup = copy.deepcopy(game.board)
+                for next_a in range(4):
+                    if(py_2048.is_invalid_action(game.board.tolist(), next_a)):
+                        next_r = game.action(next_a)
+                        state_next = np.ravel(game.board.tolist())
+                        state_next = torch.from_numpy(state_next).float()
+                        state_next = state_next.cuda()
+                        next_q_tmp = self.net.forward(state_next)
+                        next_q = np.append(next_q,next_r+np.amax(next_q_tmp.detach().cpu().numpy(), axis=0))
+                        game.board = copy.deepcopy(next_board_backup)
+                if next_q.size == 0:
+                    state = np.ravel(game.board.tolist())
+                    state = torch.from_numpy(state).float()
+                    state = state.cuda()
+                    q_tmp = self.net.forward(state)
+                    q = np.append(q,r+np.amax(q_tmp.detach().cpu().numpy(), axis=0))
+                    game.board = copy.deepcopy(next_board_backup)
+                else:
+                    q = np.append(q,np.amax(next_q))  
+            game.board = copy.deepcopy(board_backup)
+        game.score = score_backup
 
-        return np.argmax(q) # Q値の高い行動を選択
+        action = np.argmax(q) # Q値の高い行動を選択
+
+        return action
+
+    # def get_action(self, game):  # 行動を取得
+    #     q = np.empty(0)
+    #     for a in range(4):
+    #         board_backup = copy.deepcopy(game.board)
+    #         score_backup = game.score
+
+    #         if(py_2048.is_invalid_action(game.board.tolist(), a)):
+    #             q = np.append(q,-10**10)
+    #         else:
+    #             r = game.action(a)
+    #             state_new = np.ravel(game.board.tolist())
+    #             state_new = torch.from_numpy(state_new).float()
+    #             state_new = state_new.cuda()
+    #             q_tmp = self.net.forward(state_new)
+    #             q = np.append(q,r+np.amax(q_tmp.detach().cpu().numpy(), axis=0))
+    #         game.board = board_backup
+    #         game.score = score_backup
+
+    #     return np.argmax(q) # Q値の高い行動を選択
 
 class Ai:
     def __init__(self,brain,game):
@@ -116,10 +196,10 @@ class Ai:
     
     def learning(self):
         current_states = self.game.board
-        action = self.brain.get_train_action(self.game)
+        action = self.brain.new_get_train_action(self.game)
         reward = self.game.action(action)
         self.brain.train(current_states,self.game.board,action,reward,py_2048.is_end(self.game.board.tolist()))
 
     def action(self):
-        action = self.brain.get_action(self.game)
+        action = self.brain.new_get_action(self.game)
         reward = self.game.action(action)
