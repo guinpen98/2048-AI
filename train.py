@@ -23,12 +23,12 @@ ai = deep_q_network.Ai(brain,game)
 
 # 学習
 
-for t in range(3000):
+for t in range(4000):
     ai.game.reset()
     while(not py_2048.is_end(ai.game.board)):
         ai.learning()
 
-model_path = './model/new_model_3000_Adam.pth'
+model_path = './model/new_model_4000_Adam.pth'
 torch.save(net.state_dict(),model_path)
 
 # show_board(ai.game)

@@ -21,7 +21,7 @@ n_mid2 = 1024
 net = deep_q_network.Net(n_mid1,n_mid2)
 
 # 読み込み
-load_path = './model/new_model_3000_Adam.pth'
+load_path = './model/new_model_4000_Adam.pth'
 load_weights = torch.load(load_path)
 net.load_state_dict(load_weights)
 
